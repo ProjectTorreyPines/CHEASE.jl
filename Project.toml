@@ -1,4 +1,10 @@
+name = "CHEASE"
+uuid = "40781a8e-f1bb-11ec-24ef-0f6bc40c1567"
+authors = ["Tim Slendebroek <tim@slendebroek.com>"]
+version = "0.1.0"
+
 [deps]
 EFIT = "cda752c5-6b03-55a3-9e33-132a441b0c17"
 Fortran90Namelists = "8fb689aa-71ff-4044-8071-0cffc910b57d"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
