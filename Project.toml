@@ -1,0 +1,4 @@
+[deps]
+EFIT = "cda752c5-6b03-55a3-9e33-132a441b0c17"
+Fortran90Namelists = "8fb689aa-71ff-4044-8071-0cffc910b57d"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
