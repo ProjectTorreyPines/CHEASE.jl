@@ -1,5 +1,5 @@
 # CHEASE.jl
-## Julia wrapper for the CHEASE fixed boundary equilibrium solver (https://gitlab.epfl.ch/spc/chease.git)
+### Julia wrapper for the CHEASE fixed boundary equilibrium solver (https://gitlab.epfl.ch/spc/chease.git)
 
 see `examples/run_chease_example.jl` on how to use this package.
 
