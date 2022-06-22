@@ -2,10 +2,10 @@
 Julia wrapper for CHEASE fixed boundary equilibrium solver (https://gitlab.epfl.ch/spc/chease.git)
 """
 
-import Pkg
-Pkg.activate("..")
+module CHEASE
 
-using Revise
+__precompile__(true)
+
 using Fortran90Namelists
 using EFIT
 using Equilibrium
@@ -15,49 +15,44 @@ import Dates
 
 function run_chease(ϵ::Real, z_axis::Real, pressure_sep::Real, Bt_center::Real, r_center::Real, Ip::Real, r_bound::AbstractVector{<:Real}, z_bound::AbstractVector{<:Real}, mode::Int64, rho_psi::Union{Missing,AbstractVector{<:Real}}, pressure::AbstractVector{<:Real}, j_tor::AbstractVector{<:Real})
 
+    # File path and directory creation
     chease_dir = joinpath(dirname(abspath(@__FILE__)), "..")
     template_dir = joinpath(chease_dir, "templates")
 
     executable = joinpath(chease_dir, "executables", "chease_m1_ARM_gfortran")
     chease_namelist = joinpath(template_dir, "chease_namelist_OMFIT")
-
     run_dir = mkdir(joinpath(chease_dir, "rundir", string(Dates.now())))
 
+    cp(chease_namelist, joinpath(run_dir, "chease_namelist"))
+    cd(run_dir)
 
-    run_chease(chease_namelist, joinpath(template_dir, "EXPEQ_OMFIT.out"), executable, run_dir)
+    # Edit chease namelist
+    edit_namelist(chease_namelist, Bt_center, r_center, Ip)
+
+    # Create EQOUT file
+    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
+
+    # run chease
+    write("chease.output", read(`$(executable)`))
+
+    # read output
     eq = read_chease_output(joinpath(run_dir, "EQDSK_COCOS_01.OUT"))
 
+    # return arrays
     println(eq.q)
-end
-
-function run_chease(chease_namelist, EQOUT_file, chease_executable, run_dir)
-
-    cp(chease_namelist, joinpath(run_dir, "chease_namelist"))
-    cp(EQOUT_file, joinpath(run_dir, "EXPEQ"))
-    cp(chease_executable, joinpath(run_dir, "chease"))
-    cd(run_dir)
-    edit_namelist(chease_namelist, Bt_center, r_center, Ip)
-    write_EQ_file(ϵ, z_axis, pressure_sep, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
-
-    write("chease.output", read(`$(chease_executable)`))
-
+    
 end
 
 function edit_namelist(chease_namelist, Bt_center, r_center, Ip)
     nml = readnml(chease_namelist)
     eqdata = nml[:EQDATA]
 
-    @show ( eqdata[:B0EXP], eqdata[:R0EXP])
     eqdata[:R0EXP] = abs(r_center)
     eqdata[:B0EXP] = abs(Bt_center)
-    @show (eqdata[:CURRT])
     eqdata[:CURRT] = abs(Ip / (r_center * Bt_center / μ_0))
-    @show (eqdata[:CURRT])
     eqdata[:SIGNB0XP] = sign(Bt_center)
     eqdata[:SIGNIPXP] = sign(Ip)
 
-    @show(pwd())
-    @show(nml[:EQDATA][:B0EXP])
     writenml(joinpath(pwd(), "chease_namelist"), nml; verbose=false)
 
     # Annoyingly CHEASE cares about the order of the namelist items...
@@ -87,8 +82,26 @@ function edit_namelist(chease_namelist, Bt_center, r_center, Ip)
 
 end
 
-function write_EQ_file(ϵ, z_axis, pressure_sep, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
-    # write function
+function write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
+    write_list = [string(ϵ), string(z_axis), string(pressure_sep)]
+    @assert length(r_bound) == length(z_bound) "R,Z boundary arrays must have the same shape"
+    write_list = vcat(write_list, string(length(r_bound)))
+    for (r,z) in zip(r_bound, z_bound)
+        write_list = vcat(write_list, "$r    $z")
+    end
+    @assert length(rho_psi) == length(pressure) == length(j_tor) "rho_psi, presssure and j_tor arrays must have the same shape"
+    write_list = vcat(write_list, "$(length(pressure))    $(string(mode)[1])")
+    write_list = vcat(write_list, "$(string(mode)[2])    0")
+    write_list = vcat(write_list, map(string, rho_psi))
+    write_list = vcat(write_list, map(string, pressure))
+    write_list = vcat(write_list, map(string, j_tor))
+
+    touch("EXPEQ")
+    open("EXPEQ" , "w") do file
+        for line in write_list
+            write(file, "$line \n")
+        end
+    end
 end
 
 
@@ -328,3 +341,8 @@ if debug
 
 
     run_chease(ϵ, z_axis, pressure_sep, Bt_center, r_center, Ip, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
+end
+
+export run_chease
+
+end # module
