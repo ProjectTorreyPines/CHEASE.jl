@@ -1,7 +1,7 @@
 # CHEASE.jl
 CHEASE implementation in Julia
 
-see `examples/run_chease_example.jl on how to use this package.`
+see `examples/run_chease_example.jl` on how to use this package.
 
 Exectues chease using the following scalars and arrays:
 ```julia
