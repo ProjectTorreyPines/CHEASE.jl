@@ -8,7 +8,7 @@ Exectues chease using the following scalars and arrays:
     function run_chease(
         ϵ::Real, # []
         z_axis::Real, #[m]
-        pressure_sep::Real, #[?]
+        pressure_sep::Real, #[Pa]
         Bt_center::Real,    #[T]
         r_center::Real,     #[m]
         Ip::Real,           #[A]
@@ -16,6 +16,6 @@ Exectues chease using the following scalars and arrays:
         z_bound::AbstractVector{<:Real}, #[m]
         mode::Int64, #[]
         rho_psi::Union{Missing,AbstractVector{<:Real}}, #[]
-        pressure::AbstractVector{<:Real}, #[?]
+        pressure::AbstractVector{<:Real}, #[Pa] 
         j_tor::AbstractVector{<:Real})  #[A/m^2]
 ```

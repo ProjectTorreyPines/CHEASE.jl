@@ -44,7 +44,8 @@ function run_chease(
     mode::Int64,
     rho_psi::Union{Missing,AbstractVector{<:Real}},
     pressure::AbstractVector{<:Real},
-    j_tor::AbstractVector{<:Real})
+    j_tor::AbstractVector{<:Real};
+    keep_output=true)
 
     # File path and directory creation
     chease_dir = joinpath(dirname(abspath(@__FILE__)), "..")
@@ -58,16 +59,20 @@ function run_chease(
     cd(run_dir)
 
     # Edit chease namelist
-    edit_chease_namelist(chease_namelist, Bt_center, r_center, Ip)
+    edit_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound)
 
     # Create EQOUT file
-    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
+    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
 
     # run chease
     write("chease.output", read(`$(executable)`))
 
     # read output
     EFITEquilibrium = read_chease_output(joinpath(run_dir, "EQDSK_COCOS_01.OUT"))
+
+    if !keep_output
+        rm(run_dir, force=true, recursive=true)
+    end
 
     return EFITEquilibrium
 end
