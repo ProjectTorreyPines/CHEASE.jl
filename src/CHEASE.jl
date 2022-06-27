@@ -7,7 +7,7 @@ module CHEASE
 __precompile__(true)
 
 using Fortran90Namelists
-using EFIT
+import EFIT:readg
 using Equilibrium
 import Dates
 
@@ -50,8 +50,12 @@ function run_chease(
     # File path and directory creation
     chease_dir = joinpath(dirname(abspath(@__FILE__)), "..")
     template_dir = joinpath(chease_dir, "templates")
+    executable() = try
+        return strip(read(`which chease`, String))
+    catch
+        return joinpath(chease_dir, "executables", "chease_m1_ARM_gfortran")
+    end
 
-    executable = joinpath(chease_dir, "executables", "chease_m1_ARM_gfortran")
     chease_namelist = joinpath(template_dir, "chease_namelist_OMFIT")
     run_dir = mkdir(joinpath(chease_dir, "rundir", string(Dates.now())))
 
@@ -65,16 +69,16 @@ function run_chease(
     write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
 
     # run chease
-    write("chease.output", read(`$(executable)`))
+    write("chease.output", read(`$(executable())`))
 
     # read output
-    EFITEquilibrium = read_chease_output(joinpath(run_dir, "EQDSK_COCOS_01.OUT"))
+    GEQDSKFile = read_chease_output(joinpath(run_dir, "EQDSK_COCOS_01.OUT"))
 
     if !keep_output
         rm(run_dir, force=true, recursive=true)
     end
 
-    return EFITEquilibrium
+    return GEQDSKFile
 end
 
 export run_chease

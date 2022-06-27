@@ -65,30 +65,6 @@ function edit_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound,
 
     writenml(joinpath(pwd(), "chease_namelist"), nml; verbose=false)
 
-    # Annoyingly CHEASE cares about the order of the namelist items...
-    open(joinpath(pwd(), "chease_namelist")) do f
-        encounter = false
-        list_1 = [""]
-        list_2 = [""]
-        while ! eof(f)
-            line = readline(f)
-            if !encounter && line !== "/"
-    
-                list_1 = hcat(list_1,"$line")
-            elseif encounter
-                list_2 = hcat(list_2,"$line")
-            end
-    
-            if line == "/"
-                encounter = true
-            end
-        end
-        open("chease_namelist", "w") do file
-            for line in hcat(list_2,list_1, "/")
-                write(file, line, "\n")
-            end
-        end
-    end
 end
 
 """
@@ -97,5 +73,5 @@ end
 This function reads the EQDSK output file from chease using the EFIT package and returns an EFITEquilibrium
 """
 function read_chease_output(EQDSK)
-    return efit(readg(EQDSK), 1)
+    return readg(EQDSK)
 end
