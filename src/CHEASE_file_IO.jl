@@ -51,6 +51,8 @@ function edit_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound,
     eqdata[:SIGNB0XP] = sign(Bt_center)
     eqdata[:SIGNIPXP] = sign(Ip)
 
+#    eqdata[:COCOS_IN] = 11
+
     # box length
     r_max = maximum(r_bound)
     r_min = minimum(r_bound)

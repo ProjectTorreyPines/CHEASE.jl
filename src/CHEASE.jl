@@ -20,7 +20,7 @@ include("CHEASE_file_IO.jl")
         z_axis::Real,
         pressure_sep::Real,
         Bt_center::Real,
-        r_center::Real,
+        r_geo::Real,
         Ip::Real,
         r_bound::AbstractVector{<:Real},
         z_bound::AbstractVector{<:Real},
@@ -37,7 +37,7 @@ function run_chease(
     z_axis::Real,
     pressure_sep::Real,
     Bt_center::Real,
-    r_center::Real,
+    r_geo::Real,
     Ip::Real,
     r_bound::AbstractVector{<:Real},
     z_bound::AbstractVector{<:Real},
@@ -63,10 +63,10 @@ function run_chease(
     cd(run_dir)
 
     # Edit chease namelist
-    edit_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound)
+    edit_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound, z_bound)
 
     # Create EQOUT file
-    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
+    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
 
     # run chease
     write("chease.output", read(`$(executable())`))
