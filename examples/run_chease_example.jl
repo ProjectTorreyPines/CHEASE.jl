@@ -238,6 +238,6 @@ j_tor .*=  Bt_center / (r_center * μ_0)
 r_bound .*= r_center
 z_bound .*= r_center
 
-gEQDSK = run_chease(ϵ, z_axis, pressure_sep, Bt_center, r_center, Ip, r_bound, z_bound, mode, rho_psi, pressure, j_tor,keep_output=false)
+CHEASE_struct = run_chease(ϵ, z_axis, pressure_sep, Bt_center, r_center, Ip, r_bound, z_bound, mode, rho_psi, pressure, j_tor, clear_workdir=false)
 
-println("q_profile", gEQDSK.qpsi)
+println("q_profile", CHEASE_struct.gfile.qpsi)
