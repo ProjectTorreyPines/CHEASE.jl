@@ -7,9 +7,24 @@ module CHEASE
 __precompile__(true)
 
 using Fortran90Namelists
-import EFIT:readg
-using Equilibrium
-import Dates
+import Equilibrium
+import EFIT
+
+mutable struct Chease
+    ϵ::Real
+    z_axis::Real
+    pressure_sep::Real
+    Bt_center::Real
+    r_geo::Real
+    Ip::Real
+    r_bound::AbstractVector{<:Real}
+    z_bound::AbstractVector{<:Real}
+    mode::Integer
+    rho_psi::Union{Missing,AbstractVector{<:Real}}
+    pressure::AbstractVector{<:Real}
+    j_tor::AbstractVector{<:Real}
+    gfile::EFIT.GEQDSKFile
+end
 
 # include CHEASE file handling functions
 include("CHEASE_file_IO.jl")
@@ -41,11 +56,11 @@ function run_chease(
     Ip::Real,
     r_bound::AbstractVector{<:Real},
     z_bound::AbstractVector{<:Real},
-    mode::Int64,
+    mode::Integer,
     rho_psi::Union{Missing,AbstractVector{<:Real}},
     pressure::AbstractVector{<:Real},
     j_tor::AbstractVector{<:Real};
-    keep_output=true)
+    clear_workdir::Bool)
 
     # File path and directory creation
     chease_dir = joinpath(dirname(abspath(@__FILE__)), "..")
@@ -58,28 +73,44 @@ function run_chease(
 
     chease_namelist = joinpath(template_dir, "chease_namelist_OMFIT")
     run_dir = mktempdir()
-    display(run_dir)
+    @debug "Running CHEASE in $run_dir"
 
     cp(chease_namelist, joinpath(run_dir, "chease_namelist"))
     cd(run_dir)
 
     # Edit chease namelist
-    edit_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound, z_bound)
+    edit_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1])
 
     # Create EQOUT file
-    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, r_bound, z_bound, mode, rho_psi, pressure, j_tor)
+    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor)
 
     # run chease
     write("chease.output", read(`$(executable)`))
 
     # read output
-    GEQDSKFile = read_chease_output(joinpath(run_dir, "EQDSK_COCOS_01.OUT"))
+    gfile = read_chease_output(joinpath(run_dir, "EQDSK_COCOS_01.OUT"))
 
-    if !keep_output
+    if !clear_workdir
         rm(run_dir, force=true, recursive=true)
     end
 
-    return GEQDSKFile
+    # populate results data structure
+    chease = Chease(
+        ϵ,
+        z_axis,
+        pressure_sep,
+        Bt_center,
+        r_geo,
+        Ip,
+        r_bound,
+        z_bound,
+        mode,
+        rho_psi,
+        pressure,
+        j_tor,
+        gfile)
+
+    return chease
 end
 
 export run_chease

@@ -238,6 +238,6 @@ j_tor .*=  Bt_center / (r_center * μ_0)
 r_bound .*= r_center
 z_bound .*= r_center
 
-EFITEquilibrium = run_chease(ϵ, z_axis, pressure_sep, Bt_center, r_center, Ip, r_bound, z_bound, mode, rho_psi, pressure, j_tor,keep_output=false)
+EFITEquilibrium = run_chease(ϵ, z_axis, pressure_sep, Bt_center, r_center, Ip, r_bound, z_bound, mode, rho_psi, pressure, j_tor, clear_workdir=false)
 
 println("q_profile", EFITEquilibrium.q.(EFITEquilibrium.psi))
