@@ -90,8 +90,10 @@ function run_chease(
     # read output
     gfile = read_chease_output(joinpath(run_dir, "EQDSK_COCOS_01.OUT"))
 
-    if !clear_workdir
+    if clear_workdir
         rm(run_dir, force=true, recursive=true)
+    else
+        @warn "CHEASE run directory $run_dir"
     end
 
     # populate results data structure
