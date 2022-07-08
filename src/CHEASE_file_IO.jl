@@ -50,7 +50,7 @@ function edit_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound,
     eqdata[:CURRT] = abs(Ip / (r_center * Bt_center / μ_0))
     eqdata[:SIGNB0XP] = sign(Bt_center)
     eqdata[:SIGNIPXP] = sign(Ip)
-
+    eqdata[:NT] = 80
 #    eqdata[:COCOS_IN] = 11
 
     # box length

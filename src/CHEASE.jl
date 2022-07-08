@@ -61,7 +61,6 @@ function run_chease(
     pressure::AbstractVector{<:Real},
     j_tor::AbstractVector{<:Real};
     clear_workdir::Bool)
-
     # File path and directory creation
     chease_dir = joinpath(dirname(abspath(@__FILE__)), "..")
     template_dir = joinpath(chease_dir, "templates")
