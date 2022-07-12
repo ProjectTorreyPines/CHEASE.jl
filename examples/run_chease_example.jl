@@ -1,5 +1,5 @@
 import Pkg
-Pkg.activate(joinpath(dirname(abspath(@__FILE__)),".."))
+Pkg.activate(joinpath(@__DIR__,".."))
 
 import CHEASE:run_chease
 

@@ -62,7 +62,7 @@ function run_chease(
     j_tor::AbstractVector{<:Real};
     clear_workdir::Bool)
     # File path and directory creation
-    chease_dir = joinpath(dirname(abspath(@__FILE__)), "..")
+    chease_dir = joinpath(@__DIR__, "..")
     template_dir = joinpath(chease_dir, "templates")
     executable = try
         strip(read(`which chease`, String))
