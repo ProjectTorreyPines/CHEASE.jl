@@ -49,11 +49,11 @@ function write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, Ip, r_b
 end
 
 """
-    edit_chease_namelist(chease_namelist, Bt_center, r_center, Ip)
+    write_chease_namelist(chease_namelist, Bt_center, r_center, Ip)
 
-This function edits the chease_namelist using the Fortran90Namelists package
+This function writes the chease_namelist using the Fortran90Namelists package
 """
-function edit_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound)
+function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound)
     nml = readnml(chease_namelist)
     eqdata = nml[:EQDATA]
 

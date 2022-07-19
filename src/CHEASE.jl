@@ -75,16 +75,25 @@ function run_chease(
     @debug "Running CHEASE in $run_dir"
 
     cp(chease_namelist, joinpath(run_dir, "chease_namelist"))
-    cd(run_dir)
 
-    # Edit chease namelist
-    edit_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1])
+    old_dir = pwd()
+    try
+        cd(run_dir)
 
-    # Create EQOUT file
-    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, Ip, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor)
+        # Edit chease namelist
+        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1])
 
-    # run chease
-    write("chease.output", read(`$(executable)`))
+        # Create EQOUT file
+        write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, Ip, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor)
+
+        # run chease
+        write("chease.output", read(`$(executable)`))
+
+        cd(old_dir)
+    catch 
+        cd(old_dir)
+        rethrow()
+    end
 
     # read output
     gfile = read_chease_output(joinpath(run_dir, "EQDSK_COCOS_01.OUT"))
