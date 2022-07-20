@@ -85,18 +85,27 @@ function run_chease(
         cd(run_dir)
 
         # Edit chease namelist
-        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; extra_box_fraction=extra_box_fraction)
+        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; extra_box_fraction)
 
         # Create EQOUT file
         write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, Ip, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor)
 
         # run chease
-        write("chease.output", read(`$(executable)`))
+        open("chease.output", "w") do io
+            run(pipeline(`$(executable)`; stdout=io, stderr=io))
+        end
 
-        cd(old_dir)
     catch
-        cd(old_dir)
+        # show last 100 lines of  chease.output
+        txt = open("chease.output", "r") do io
+            split(read(io, String), "\n")
+        end
+        @error "ERROR running CHEASE\n...\n" * join(txt[max(1, length(txt) - 100):end], "\n")
+
         rethrow()
+
+    finally
+        cd(old_dir)
     end
 
     # read output
