@@ -30,7 +30,7 @@ end
 include("CHEASE_file_IO.jl")
 
 """
-    function run_chease(
+    run_chease(
         ϵ::Real,
         z_axis::Real,
         pressure_sep::Real,
@@ -39,10 +39,12 @@ include("CHEASE_file_IO.jl")
         Ip::Real,
         r_bound::AbstractVector{<:Real},
         z_bound::AbstractVector{<:Real},
-        mode::Int64,
+        mode::Integer,
         rho_psi::Union{Missing,AbstractVector{<:Real}},
         pressure::AbstractVector{<:Real},
-        j_tor::AbstractVector{<:Real})
+        j_tor::AbstractVector{<:Real};
+        clear_workdir::Bool,
+        extra_box_fraction::Real=0.25)
 
 This function executes chease given the above set-up and handles the file-io
 Returns an EFITEquilibrium struct (see Equilibrium/src/efit.jl)
@@ -60,7 +62,9 @@ function run_chease(
     rho_psi::Union{Missing,AbstractVector{<:Real}},
     pressure::AbstractVector{<:Real},
     j_tor::AbstractVector{<:Real};
-    clear_workdir::Bool)
+    clear_workdir::Bool,
+    extra_box_fraction::Real=0.25)
+
     # File path and directory creation
     chease_dir = joinpath(@__DIR__, "..")
     template_dir = joinpath(chease_dir, "templates")
@@ -81,7 +85,7 @@ function run_chease(
         cd(run_dir)
 
         # Edit chease namelist
-        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1])
+        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; extra_box_fraction=extra_box_fraction)
 
         # Create EQOUT file
         write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, Ip, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor)
@@ -90,7 +94,7 @@ function run_chease(
         write("chease.output", read(`$(executable)`))
 
         cd(old_dir)
-    catch 
+    catch
         cd(old_dir)
         rethrow()
     end

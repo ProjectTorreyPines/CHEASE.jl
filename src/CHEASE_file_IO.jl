@@ -1,7 +1,7 @@
 μ_0 = 1.25663706212e-6
 
 """
-    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_bound, z_bound, mode, rho_pol, pressure, j_tor)
+    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, Ip, r_bound, z_bound, mode, rho_pol, pressure, j_tor)
 
 This function writes a EXPEQ file for CHEASE given the above arrays and scalars
 """
@@ -30,7 +30,7 @@ function write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, Ip, r_b
     write_list = [string(ϵ), string(z_axis), string(pressure_sep_norm)]
     @assert length(r_bound) == length(z_bound) "R,Z boundary arrays must have the same shape"
     write_list = vcat(write_list, string(length(r_bound)))
-    for (r,z) in zip(r_bound_norm, z_bound_norm)
+    for (r, z) in zip(r_bound_norm, z_bound_norm)
         write_list = vcat(write_list, "$r    $z")
     end
     @assert length(rho_pol) == length(pressure) == length(j_tor) "rho_pol, presssure and j_tor arrays must have the same shape"
@@ -41,7 +41,7 @@ function write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, Ip, r_b
     write_list = vcat(write_list, map(string, j_tor_norm))
 
     touch("EXPEQ")
-    open("EXPEQ" , "w") do file
+    open("EXPEQ", "w") do file
         for line in write_list
             write(file, "$line \n")
         end
@@ -49,17 +49,17 @@ function write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, Ip, r_b
 end
 
 """
-    write_chease_namelist(chease_namelist, Bt_center, r_center, Ip)
+    write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound; extra_box_fraction=0.25)
 
 This function writes the chease_namelist using the Fortran90Namelists package
 """
-function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound)
+function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound; extra_box_fraction=0.25)
     nml = readnml(chease_namelist)
     eqdata = nml[:EQDATA]
 
     eqdata[:R0EXP] = r_center
     eqdata[:B0EXP] = Bt_center
-    eqdata[:CURRT] = abs(Ip/ (r_center * Bt_center / μ_0))
+    eqdata[:CURRT] = abs(Ip / (r_center * Bt_center / μ_0))
     eqdata[:SIGNB0XP] = sign(Bt_center)
     eqdata[:SIGNIPXP] = sign(Ip)
     eqdata[:NT] = 80
@@ -75,8 +75,8 @@ function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound
     z_max = maximum(z_bound)
     z_min = minimum(z_bound)
 
-    r_extra = (r_max - r_min) / 4.0
-    z_extra = (z_max - z_min) / 4.0
+    r_extra = (r_max - r_min) * extra_box_fraction
+    z_extra = (z_max - z_min) * extra_box_fraction
     eqdata[:RBOXLEN] = (r_max - r_min) + r_extra * 2.0
     eqdata[:RBOXLFT] = max(0, r_min - r_extra)
     eqdata[:ZBOXLEN] = (z_max - z_min) + z_extra * 2.0
