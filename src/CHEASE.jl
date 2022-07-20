@@ -44,7 +44,7 @@ include("CHEASE_file_IO.jl")
         pressure::AbstractVector{<:Real},
         j_tor::AbstractVector{<:Real};
         clear_workdir::Bool,
-        extra_box_fraction::Real=0.25)
+        extra_box_fraction::Real=0.33)
 
 This function executes chease given the above set-up and handles the file-io
 Returns an EFITEquilibrium struct (see Equilibrium/src/efit.jl)
@@ -63,7 +63,7 @@ function run_chease(
     pressure::AbstractVector{<:Real},
     j_tor::AbstractVector{<:Real};
     clear_workdir::Bool,
-    extra_box_fraction::Real=0.25)
+    extra_box_fraction::Real=0.33)
 
     # File path and directory creation
     chease_dir = joinpath(@__DIR__, "..")
