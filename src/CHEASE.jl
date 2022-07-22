@@ -43,11 +43,13 @@ include("CHEASE_file_IO.jl")
         rho_psi::Union{Missing,AbstractVector{<:Real}},
         pressure::AbstractVector{<:Real},
         j_tor::AbstractVector{<:Real};
+        rescale_eq_to_ip::Bool=false, 
         clear_workdir::Bool,
         extra_box_fraction::Real=0.33)
 
 This function executes chease given the above set-up and handles the file-io
 Returns an EFITEquilibrium struct (see Equilibrium/src/efit.jl)
+The rescale_eq_to_ip option rescales the equilibrium to match Ip given (This is useful when using CHEASE from nothing where j_tor is madeup)
 """
 function run_chease(
     ϵ::Real,
@@ -62,6 +64,7 @@ function run_chease(
     rho_psi::Union{Missing,AbstractVector{<:Real}},
     pressure::AbstractVector{<:Real},
     j_tor::AbstractVector{<:Real};
+    rescale_eq_to_ip::Bool=false,
     clear_workdir::Bool,
     extra_box_fraction::Real=0.33)
 
@@ -85,7 +88,7 @@ function run_chease(
         cd(run_dir)
 
         # Edit chease namelist
-        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; extra_box_fraction)
+        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; rescale_eq_to_ip=rescale_eq_to_ip, extra_box_fraction=extra_box_fraction)
 
         # Create EQOUT file
         write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, Ip, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor)

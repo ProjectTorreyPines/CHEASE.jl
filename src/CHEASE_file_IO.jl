@@ -53,7 +53,7 @@ end
 
 This function writes the chease_namelist using the Fortran90Namelists package
 """
-function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound; extra_box_fraction=0.33)
+function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound; rescale_eq_to_ip=false, extra_box_fraction=0.33)
     nml = readnml(chease_namelist)
     eqdata = nml[:EQDATA]
 
@@ -64,7 +64,11 @@ function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound
     eqdata[:SIGNIPXP] = sign(Ip)
     eqdata[:NT] = 80
     eqdata[:COCOS_IN] = 11
-    eqdata[:NCSCAL] = 4
+    if rescale_eq_to_ip
+        eqdata[:NCSCAL] = 2
+    else
+        eqdata[:NCSCAL] = 4
+    end
     eqdata[:NPROPT] = -2
     eqdata[:NPPFUN] = 8
     eqdata[:EPSLON] = 1e-9
