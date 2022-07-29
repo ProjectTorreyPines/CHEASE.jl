@@ -1,5 +1,6 @@
 """
 Julia wrapper for CHEASE fixed boundary equilibrium solver (https://gitlab.epfl.ch/spc/chease.git)
+On OSX with M1 install gfortran https://github.com/R-macos/gcc-darwin-arm64/releases to use the CHEASE/executables/chease_m1_ARM_gfortran executable
 """
 
 module CHEASE
@@ -49,7 +50,7 @@ include("CHEASE_file_IO.jl")
 
 This function executes chease given the above set-up and handles the file-io
 Returns an EFITEquilibrium struct (see Equilibrium/src/efit.jl)
-The rescale_eq_to_ip option rescales the equilibrium to match Ip given (This is useful when using CHEASE from nothing where j_tor is madeup)
+The rescale_eq_to_ip option rescales the equilibrium to match Ip given (this is useful when using CHEASE from nothing where j_tor is madeup)
 """
 function run_chease(
     ϵ::Real,
