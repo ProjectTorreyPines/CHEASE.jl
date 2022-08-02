@@ -3,22 +3,30 @@
 
 see `examples/run_chease_example.jl` on how to use this package.
 
-Exectues chease using the following scalars and arrays:
+
+## Call CHEASE in the following way:
+(don't include the type information)
+
 ```julia
-    function run_chease(
-        ϵ::Real,
-        z_axis::Real,
-        pressure_sep::Real,
-        Bt_center::Real,
-        r_geo::Real,
-        Ip::Real,
-        r_bound::AbstractVector{<:Real},
-        z_bound::AbstractVector{<:Real},
-        mode::Integer,
-        rho_psi::Union{Missing,AbstractVector{<:Real}},
-        pressure::AbstractVector{<:Real},
-        j_tor::AbstractVector{<:Real};
-        rescale_eq_to_ip::Bool=false,
-        clear_workdir::Bool=true,
-        extra_box_fraction::Real=0.33)
+import CHEASE:run_chease
+
+run_chease(
+    ϵ::Real, # [-]
+    z_axis::Real, # [m]
+    pressure_sep::Real, # [Pa]
+    Bt_center::Real, # [T]
+    r_geo::Real, # [m]
+    Ip::Real, # [A]
+    r_bound::AbstractVector{<:Real}, # [m]
+    z_bound::AbstractVector{<:Real}, # [m]
+    mode::Integer, # [-]
+    rho_psi::Union{Missing,AbstractVector{<:Real}}, # [-]
+    pressure::AbstractVector{<:Real}, # [Pa]
+    j_tor::AbstractVector{<:Real}; # [A.m^-2]
+    rescale_eq_to_ip::Bool=false, 
+    clear_workdir::Bool,
+    extra_box_fraction::Real=0.33)
 ```
+`rescale_eq_to_ip = true` runs CHEASE and rescales j_tor to match the Ip given
+
+`rescale_eq_to_ip = false` runs CHEASE and tries to match pressure and j_tor
