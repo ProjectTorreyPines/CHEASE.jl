@@ -80,6 +80,8 @@ function run_chease(
         if Sys.ARCH == :x86_64
             if Sys.islinux()
                 joinpath(chease_dir, "executables", "chease_linux_x86")
+            elseif Sys.isapple()
+                joinpath(chease_dir, "executables", "chease_OSX_x86")
             else
                 error("CHEASE.jl does not have a x86 binary for your OS")
             end
