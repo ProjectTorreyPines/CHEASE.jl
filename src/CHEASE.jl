@@ -99,7 +99,7 @@ function run_chease(
     run_dir = mktempdir()
     @debug "Running CHEASE in $run_dir"
 
-    cp(chease_namelist, joinpath(run_dir, "chease_namelist"))
+    cp(chease_namelist, joinpath(run_dir, "chease_namelist"), force=true)
 
     old_dir = pwd()
     try
