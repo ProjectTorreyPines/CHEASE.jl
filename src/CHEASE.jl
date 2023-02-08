@@ -13,7 +13,7 @@ module CHEASE
 __precompile__(true)
 
 using Fortran90Namelists
-import Equilibrium
+import MXHEquilibrium
 import EFIT
 
 mutable struct Chease
@@ -54,7 +54,7 @@ include("CHEASE_file_IO.jl")
         extra_box_fraction::Real=0.33)
 
 This function executes chease given the above set-up and handles the file-io
-Returns an EFITEquilibrium struct (see Equilibrium/src/efit.jl)
+Returns an EFITEquilibrium struct (see MXHEquilibrium/src/efit.jl)
 The rescale_eq_to_ip option rescales the equilibrium to match Ip given (this is useful when using CHEASE from nothing where j_tor is madeup)
 """
 function run_chease(
@@ -99,7 +99,7 @@ function run_chease(
     run_dir = mktempdir()
     @debug "Running CHEASE in $run_dir"
 
-    cp(chease_namelist, joinpath(run_dir, "chease_namelist"))
+    cp(chease_namelist, joinpath(run_dir, "chease_namelist"), force=true)
 
     old_dir = pwd()
     try

@@ -96,5 +96,5 @@ end
 This function reads the EQDSK output file from chease using the EFIT package and returns an EFITEquilibrium
 """
 function read_chease_output(EQDSK)
-    return Equilibrium.readg(EQDSK)
+    return MXHEquilibrium.readg(EQDSK)
 end
