@@ -72,6 +72,7 @@ function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound
     eqdata[:NPROPT] = -2
     eqdata[:NPPFUN] = 8
     eqdata[:EPSLON] = 1e-9
+    eqdata[:RELAX] = 0.5
 
     # box length
     r_max = maximum(r_bound)
