@@ -106,7 +106,7 @@ function run_chease(
         cd(run_dir)
 
         # Edit chease namelist
-        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; rescale_eq_to_ip=rescale_eq_to_ip, extra_box_fraction=extra_box_fraction)
+        write_chease_namelist(chease_namelist, Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; rescale_eq_to_ip, extra_box_fraction)
 
         # Create EQOUT file
         write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, Ip, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor)
