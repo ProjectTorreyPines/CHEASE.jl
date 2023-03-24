@@ -62,7 +62,7 @@ function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound
     eqdata[:CURRT] = abs(Ip / (r_center * Bt_center / μ_0))
     eqdata[:SIGNB0XP] = sign(Bt_center)
     eqdata[:SIGNIPXP] = sign(Ip)
-    eqdata[:NT] = 80
+    eqdata[:NT] = 80 # number of theta points
     eqdata[:COCOS_IN] = 11
     if rescale_eq_to_ip
         eqdata[:NCSCAL] = 2
@@ -71,7 +71,7 @@ function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound
     end
     eqdata[:NPROPT] = -2
     eqdata[:NPPFUN] = 8
-    eqdata[:EPSLON] = 1e-9
+    eqdata[:EPSLON] = 1e-6 # convergence
     eqdata[:RELAX] = 0.5
 
     # box length
@@ -88,7 +88,6 @@ function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound
     eqdata[:ZBOXMID] = (z_max + z_min) / 2.0
 
     writenml(joinpath(pwd(), "chease_namelist"), nml; verbose=false)
-
 end
 
 """
