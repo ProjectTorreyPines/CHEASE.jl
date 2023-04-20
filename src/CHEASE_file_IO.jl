@@ -72,14 +72,13 @@ function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound
     eqdata[:NPROPT] = -2
     eqdata[:NPPFUN] = 8
     eqdata[:EPSLON] = 1e-6 # convergence
-    eqdata[:RELAX] = 0.5
+    eqdata[:RELAX] = 0.9
 
-    # box length
+    # box size
     r_max = maximum(r_bound)
     r_min = minimum(r_bound)
     z_max = maximum(z_bound)
     z_min = minimum(z_bound)
-
     r_extra = (r_max - r_min) * extra_box_fraction
     z_extra = (z_max - z_min) * extra_box_fraction
     eqdata[:RBOXLEN] = (r_max - r_min) + r_extra * 2.0
