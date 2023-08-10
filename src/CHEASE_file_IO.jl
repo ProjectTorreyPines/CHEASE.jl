@@ -5,7 +5,7 @@
 
 This function writes a EXPEQ file for CHEASE given the above arrays and scalars
 """
-function write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, Ip, r_bound, z_bound, mode, rho_pol, pressure, j_tor)
+function write_EXPEQ_file(ϵ::T, z_axis::T, pressure_sep::T, r_center::T, Bt_center::T, Ip::T, r_bound::AbstractVector{T}, z_bound::AbstractVector{T}, mode::Int, rho_pol::AbstractVector{T}, pressure::AbstractVector{T}, j_tor::AbstractVector{T}) where {T<:Real}
 
     # Normalize from SI to chease units
     pressure_sep_norm = pressure_sep / (Bt_center^2 / μ_0)
