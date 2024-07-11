@@ -1,11 +1,35 @@
 μ_0 = 1.25663706212e-6
 
 """
-    write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_center, Bt_center, Ip, r_bound, z_bound, mode, rho_pol, pressure, j_tor)
+    write_EXPEQ_file(
+        ϵ::Float64,
+        z_axis::Float64,
+        pressure_sep::Float64,
+        r_center::Float64,
+        Bt_center::Float64,
+        Ip::Float64,
+        r_bound::Vector{Float64},
+        z_bound::Vector{Float64},
+        mode::Int,
+        rho_pol::Vector{Float64},
+        pressure::Vector{Float64},
+        j_tor::Vector{Float64})
 
 This function writes a EXPEQ file for CHEASE given the above arrays and scalars
 """
-function write_EXPEQ_file(ϵ::T, z_axis::T, pressure_sep::T, r_center::T, Bt_center::T, Ip::T, r_bound::AbstractVector{T}, z_bound::AbstractVector{T}, mode::Int, rho_pol::AbstractVector{T}, pressure::AbstractVector{T}, j_tor::AbstractVector{T}) where {T<:Real}
+function write_EXPEQ_file(
+    ϵ::Float64,
+    z_axis::Float64,
+    pressure_sep::Float64,
+    r_center::Float64,
+    Bt_center::Float64,
+    Ip::Float64,
+    r_bound::Vector{Float64},
+    z_bound::Vector{Float64},
+    mode::Int,
+    rho_pol::Vector{Float64},
+    pressure::Vector{Float64},
+    j_tor::Vector{Float64})
 
     # Normalize from SI to chease units
     pressure_sep_norm = pressure_sep / (Bt_center^2 / μ_0)
@@ -48,12 +72,32 @@ function write_EXPEQ_file(ϵ::T, z_axis::T, pressure_sep::T, r_center::T, Bt_cen
     end
 end
 
+export write_EXPEQ_file
+push!(document[:Base], :write_EXPEQ_file)
+
 """
-    write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound; extra_box_fraction=0.33)
+    write_chease_namelist(
+        chease_namelist::String,
+        Bt_center::Float64,
+        r_center::Float64,
+        Ip::Float64,
+        r_bound::Vector{Float64},
+        z_bound::Vector{Float64};
+        rescale_eq_to_ip::Bool=false,
+        extra_box_fraction::Float64=0.33)
 
 This function writes the chease_namelist using the Fortran90Namelists package
 """
-function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound, z_bound; rescale_eq_to_ip=false, extra_box_fraction=0.33)
+function write_chease_namelist(
+    chease_namelist::String,
+    Bt_center::Float64,
+    r_center::Float64,
+    Ip::Float64,
+    r_bound::Vector{Float64},
+    z_bound::Vector{Float64};
+    rescale_eq_to_ip::Bool=false,
+    extra_box_fraction::Float64=0.33)
+
     nml = readnml(chease_namelist)
     eqdata = nml[:EQDATA]
 
@@ -86,14 +130,20 @@ function write_chease_namelist(chease_namelist, Bt_center, r_center, Ip, r_bound
     eqdata[:ZBOXLEN] = (z_max - z_min) + z_extra * 2.0
     eqdata[:ZBOXMID] = (z_max + z_min) / 2.0
 
-    writenml(joinpath(pwd(), "chease_namelist"), nml; verbose=false)
+    return writenml(joinpath(pwd(), "chease_namelist"), nml; verbose=false)
 end
 
-"""
-    read_chease_output(EQDSK)
+export write_chease_namelist
+push!(document[:Base], :write_chease_namelist)
 
-This function reads the EQDSK output file from chease using the EFIT package and returns an EFITEquilibrium
 """
-function read_chease_output(EQDSK)
-    return MXHEquilibrium.readg(EQDSK)
+    read_chease_output(filename::String)
+
+This function reads gEQDSK output `filename` from CHEASE using the EFIT.jl package and returns an MXHEquilibrium object
+"""
+function read_chease_output(filename::String)
+    return MXHEquilibrium.readg(filename)
 end
+
+export read_chease_output
+push!(document[:Base], :read_chease_output)
