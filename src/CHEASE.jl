@@ -15,6 +15,10 @@ using Fortran90Namelists
 import MXHEquilibrium
 import EFIT
 
+const document = Dict()
+document[:Base] = Symbol[]
+document[:IO] = Symbol[]
+
 mutable struct Chease
     ϵ::Real
     z_axis::Real
@@ -53,7 +57,9 @@ include("CHEASE_file_IO.jl")
         extra_box_fraction::Real=0.33)
 
 This function executes chease given the above set-up and handles the file-io
+
 Returns an EFITEquilibrium struct (see MXHEquilibrium/src/efit.jl)
+
 The rescale_eq_to_ip option rescales the equilibrium to match Ip given (this is useful when using CHEASE from nothing where j_tor is madeup)
 """
 function run_chease(
@@ -155,5 +161,6 @@ function run_chease(
 end
 
 export run_chease
+push!(document[:Base], :run_chease)
 
 end # module
