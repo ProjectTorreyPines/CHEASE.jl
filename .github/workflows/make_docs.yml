@@ -26,7 +26,15 @@ jobs:
       - uses: julia-actions/cache@v1
       - name: Install dependencies
         run: |
-          julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+          julia -e '
+            using Pkg
+            Pkg.activate(".")
+            dependencies = PackageSpec[]
+            for package in ("CoordinateConventions", "EFIT", "Fortran90Namelists", "MXHEquilibrium", "MeshTools", "MillerExtendedHarmonic")
+              push!(dependencies, PackageSpec(url="https://project-torrey-pines:${{secrets.PTP_READ_TOKEN}}@github.com/ProjectTorreyPines/$package.jl.git"))
+            end
+            Pkg.add(dependencies)
+            '
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
