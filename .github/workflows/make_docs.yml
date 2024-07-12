@@ -28,7 +28,7 @@ jobs:
         run: |
           julia -e '
             using Pkg
-            Pkg.activate(".")
+            Pkg.activate("docs")
             
             dependencies = PackageSpec[]
             for package in ("CoordinateConventions", "EFIT", "Fortran90Namelists", "MXHEquilibrium", "MeshTools", "MillerExtendedHarmonic")
