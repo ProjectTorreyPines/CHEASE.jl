@@ -5,11 +5,6 @@ on:
   push:
     branches:
       - master
-      - docs
-    paths:
-      - '.github/workflows/make_docs.yml'
-      - 'src/'
-      - 'docs/**'
     tags: '*'
   workflow_dispatch:
     
