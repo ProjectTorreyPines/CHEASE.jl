@@ -102,7 +102,11 @@ function run_chease(
 
     chease_namelist = joinpath(template_dir, "chease_namelist_OMFIT")
     run_dir = mktempdir()
-    @debug "Running CHEASE in $run_dir"
+    if clear_workdir
+        @debug "Running CHEASE in $run_dir"
+    else
+        @warn "CHEASE run directory $run_dir"
+    end
 
     cp(chease_namelist, joinpath(run_dir, "chease_namelist"); force=true)
 
@@ -138,8 +142,6 @@ function run_chease(
 
     if clear_workdir
         rm(run_dir; force=true, recursive=true)
-    else
-        @warn "CHEASE run directory $run_dir"
     end
 
     # populate results data structure
