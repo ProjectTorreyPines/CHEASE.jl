@@ -12,4 +12,4 @@ MeshTools = "804828d9-b4e9-4eca-b847-748d6c7bafa9"
 MillerExtendedHarmonic = "c82744c2-dc08-461a-8c37-87ab04d0f9b8"
 
 [compat]
-EFIT = "0.2"
+EFIT = ">= 0.1"
