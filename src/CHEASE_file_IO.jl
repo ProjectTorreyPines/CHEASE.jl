@@ -142,7 +142,7 @@ push!(document[:Base], :write_chease_namelist)
 This function reads gEQDSK output `filename` from CHEASE using the EFIT.jl package and returns an MXHEquilibrium object
 """
 function read_chease_output(filename::String)
-    return MXHEquilibrium.readg(filename)
+    return MXHEquilibrium.readg(filename; set_time=0.0)
 end
 
 export read_chease_output
