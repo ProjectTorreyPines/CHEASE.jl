@@ -1,7 +1,7 @@
 name = "CHEASE"
 uuid = "40781a8e-f1bb-11ec-24ef-0f6bc40c1567"
 authors = ["Tim Slendebroek <tim@slendebroek.com>"]
-version = "1.0.0"
+version = "1.0.1"
 
 [deps]
 EFIT = "cda752c5-6b03-55a3-9e33-132a441b0c17"
