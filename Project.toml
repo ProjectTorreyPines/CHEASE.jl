@@ -12,5 +12,5 @@ MillerExtendedHarmonic = "c82744c2-dc08-461a-8c37-87ab04d0f9b8"
 [compat]
 EFIT = "1"
 Fortran90Namelists = "0.1"
-MXHEquilibrium = "1.0"
+MXHEquilibrium = "1"
 MillerExtendedHarmonic = "1"
