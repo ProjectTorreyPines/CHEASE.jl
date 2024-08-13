@@ -83,7 +83,7 @@ function run_chease(
     chease_dir = joinpath(@__DIR__, "..")
     template_dir = joinpath(chease_dir, "templates")
     executable = try
-        strip(read(`which chease`, String))
+        readchomp(pipeline(`which chease`,stderr=devnull))
     catch
         if Sys.ARCH == :x86_64
             if Sys.islinux()
