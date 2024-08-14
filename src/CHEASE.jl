@@ -102,6 +102,7 @@ function run_chease(
 
     chease_namelist = joinpath(template_dir, "chease_namelist_OMFIT")
     run_dir = mktempdir()
+    chmod(chease_namelist, 0o666)
     if clear_workdir
         @debug "Running CHEASE in $run_dir"
     else
