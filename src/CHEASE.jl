@@ -108,7 +108,9 @@ function run_chease(
         @warn "CHEASE run directory $run_dir"
     end
 
-    cp(chease_namelist, joinpath(run_dir, "chease_namelist"); force=true)
+    name_list_path = joinpath(run_dir, "chease_namelist")
+    cp(chease_namelist, name_list_path; force=true)
+    chmod(name_list_path, 0o666)
 
     old_dir = pwd()
     try
