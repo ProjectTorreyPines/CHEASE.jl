@@ -11,7 +11,7 @@ Instalation tip, install with latest gfortran, on Linux:
 """
 module CHEASE
 
-using Fortran90Namelists
+using FortranNamelistParser
 import MXHEquilibrium
 import EFIT
 

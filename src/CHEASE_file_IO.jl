@@ -86,7 +86,7 @@ push!(document[:Base], :write_EXPEQ_file)
         rescale_eq_to_ip::Bool=false,
         extra_box_fraction::Float64=0.33)
 
-This function writes the chease_namelist using the Fortran90Namelists package
+This function writes the chease_namelist using the FortranNamelistParser package
 """
 function write_chease_namelist(
     chease_namelist::String,
