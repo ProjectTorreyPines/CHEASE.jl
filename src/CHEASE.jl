@@ -23,6 +23,29 @@ mutable struct Chease
     gfile::EFIT.GEQDSKFile
 end
 
+mutable struct MartianCHEASE
+    chease::CHEASE
+    number_walls::Int.   # => NWBPS in EXPEQ
+    wall_resistivity_type::Int # => NDATA in EXPEQ
+    wall_surfaces::Vector{
+        Tuple{Vector{Float64},Vector{Float64}}
+    }
+end
+
+
+function Base.getproperty(
+    mc::MartianCHEASE,
+    s::Symbol
+)
+
+    if s ∈ fieldnames(typeof(mc))
+        return getfield(mc,s)
+    else
+        return getproperty(mc.chease,s)
+    end
+end
+
+
 # include CHEASE file handling functions
 include("CHEASE_file_IO.jl")
 
