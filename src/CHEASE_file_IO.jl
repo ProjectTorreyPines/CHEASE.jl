@@ -75,6 +75,63 @@ end
 export write_EXPEQ_file
 push!(document[:Base], :write_EXPEQ_file)
 
+function write_EXPEQ_file(eq::MartianChease)
+
+    pressure_sep_norm =
+        eq.pressure_sep / (eq.Bt_center^2 / μ_0)
+
+    pressure_norm =
+        eq.pressure / (eq.Bt_center^2 / μ_0)
+
+    j_tor_norm =
+        abs.(eq.j_tor ./ (eq.Bt_center/(eq.r_center*μ_0)))
+
+    r_bound_norm = eq.r_bound ./ eq.r_center
+    z_bound_norm = eq.z_bound ./ eq.r_center
+
+    NWBPS = 1 + length(eq.wall_surfaces)
+
+    write_list = String[]
+
+    push!(write_list,string(eq.ϵ))
+    push!(write_list,string(eq.z_axis))
+    push!(write_list,string(pressure_sep_norm))
+
+    push!(
+        write_list,
+        string(length(eq.r_bound),"    ",NWBPS)
+    )
+
+    for (r,z) in zip(r_bound_norm,z_bound_norm)
+        push!(write_list,"$r    $z")
+    end
+
+    for (rw,zw) in eq.wall_surfaces
+        for (r,z) in zip(rw ./ eq.r_center,
+                         zw ./ eq.r_center)
+            push!(write_list,"$r    $z")
+        end
+    end
+
+    push!(write_list,
+        "$(length(eq.pressure))    $(string(eq.mode)[1])"
+    )
+
+    push!(write_list,
+        "$(string(eq.mode)[2])    0"
+    )
+
+    append!(write_list,string.(eq.rho_pol))
+    append!(write_list,string.(pressure_norm))
+    append!(write_list,string.(j_tor_norm))
+
+    open("EXPEQ","w") do file
+        for line in write_list
+            write(file,"$line\n")
+        end
+    end
+end
+
 """
     write_chease_namelist(
         Bt_center::Float64,
