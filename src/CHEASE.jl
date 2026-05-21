@@ -25,11 +25,11 @@ end
 
 mutable struct MartianCHEASE
     chease::CHEASE
-    number_walls::Int.   # => NWBPS in EXPEQ
+    pprime::Vector{Float64}
+    number_walls::Int  # => NWBPS in EXPEQ
     wall_resistivity_type::Int # => NDATA in EXPEQ
-    wall_surfaces::Vector{
-        Tuple{Vector{Float64},Vector{Float64}}
-    }
+    r_limiter::Union{Missing,Vector{Float64}}
+    z_limiter::Union{Missing,Vector{Float64}}
 end
 
 
