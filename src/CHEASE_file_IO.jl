@@ -80,13 +80,13 @@ function write_EXPEQ_file(eq::MartianCHEASE)
     pressure_norm =
         eq.pressure / (eq.Bt_center^2 / μ_0)
 
-    pprime = 2 * pi * eq.pprime * eq.r_center^2 * μ_0 / eq.Bt_center
+    pprime = 2 * pi * eq.pprime * eq.r_geo^2 * μ_0 / eq.Bt_center
 
     #j_tor_norm =
     #    abs.(eq.j_tor ./ (eq.Bt_center/(eq.r_center*μ_0)))
 
-    r_bound_norm = eq.r_bound ./ eq.r_center
-    z_bound_norm = eq.z_bound ./ eq.r_center
+    r_bound_norm = eq.r_bound ./ eq.r_geo
+    z_bound_norm = eq.z_bound ./ eq.r_geo
 
     NWBPS = eq.number_walls
     NDATA = eq.wall_resistivity_type
@@ -103,29 +103,26 @@ function write_EXPEQ_file(eq::MartianCHEASE)
     )
 
     for (r,z) in zip(r_bound_norm,z_bound_norm)
-        push!(write_list,"$r  $z")
+        push!(write_list,"$r    $z")
     end
 
     if NWBPS > 1 ## WHAT TO DO if > 2
-        r_limiter_norm = eq.r_limiter ./ eq.r_center
-        z_limiter_norm = eq.z_limiter ./ eq.r_center
+        r_limiter_norm = eq.r_limiter ./ eq.r_geo
+        z_limiter_norm = eq.z_limiter ./ eq.r_geo
         for (rw,zw) in zip(r_limiter_norm, z_limiter_norm)
-            push!(write_list,"$(rw)  $(zw)")
+            push!(write_list,"$(rw)    $(zw)")
         end
     
     end
 
     push!(write_list,
-        "$(length(eq.pressure))   $(string(eq.mode)[1])"
+        "$(length(eq.pressure))   $(string(eq.mode))"
     )
 
-    push!(write_list,
-        "$(string(eq.mode)[2])    0"
-    )
 
-    append!(write_list,string.(eq.rho_pol))
-    append!(write_list,string.(pressure_norm))
-    append!(write_list,string.(j_tor_norm))
+    append!(write_list,string.(eq.rho_psi))
+    append!(write_list,string.(pprime))
+    append!(write_list,string.(eq.j_tor))
 
     open("EXPEQ","w") do file
         for line in write_list
