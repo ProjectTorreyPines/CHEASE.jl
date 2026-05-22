@@ -24,7 +24,7 @@ mutable struct Chease
 end
 
 mutable struct MartianCHEASE
-    chease::CHEASE
+    chease::Chease
     pprime::Vector{Float64}
     number_walls::Int  # => NWBPS in EXPEQ
     wall_resistivity_type::Int # => NDATA in EXPEQ
