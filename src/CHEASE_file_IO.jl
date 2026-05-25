@@ -77,11 +77,9 @@ function write_EXPEQ_file(eq::MartianCHEASE)
     pressure_sep_norm =
         eq.pressure_sep / (eq.Bt_center^2 / μ_0)
 
-    pressure_norm =
-        eq.pressure / (eq.Bt_center^2 / μ_0)
-
     pprime = 2 * pi * eq.pprime * eq.r_geo^2 * μ_0 / eq.Bt_center
 
+    ## canNOT normalize here because MartianCHEASE uses FF', <Jtor> or <J//>
     #j_tor_norm =
     #    abs.(eq.j_tor ./ (eq.Bt_center/(eq.r_center*μ_0)))
 
@@ -116,12 +114,12 @@ function write_EXPEQ_file(eq::MartianCHEASE)
     end
 
     push!(write_list,
-        "$(length(eq.pressure))   $(string(eq.mode))"
+        "$(length(eq.pprime))   $(string(eq.mode))"
     )
 
 
     append!(write_list,string.(eq.rho_psi))
-    append!(write_list,string.(pprime))
+    append!(write_list,string.(eq.pprime))
     append!(write_list,string.(eq.j_tor))
 
     open("EXPEQ2","w") do file

@@ -24,25 +24,22 @@ mutable struct Chease
 end
 
 mutable struct MartianCHEASE
-    chease::Chease
+    ϵ::Float64
+    z_axis::Float64
+    pressure_sep::Float64
+    Bt_center::Float64
+    r_geo::Float64
+    Ip::Float64
+    r_bound::Vector{Float64}
+    z_bound::Vector{Float64}
+    mode::Int
+    rho_psi::Union{Missing,Vector{Float64}}
+    j_tor::Vector{Float64}
     pprime::Vector{Float64}
     number_walls::Int  # => NWBPS in EXPEQ
     wall_resistivity_type::Int # => NDATA in EXPEQ
     r_limiter::Union{Missing,Vector{Float64}}
     z_limiter::Union{Missing,Vector{Float64}}
-end
-
-
-function Base.getproperty(
-    mc::MartianCHEASE,
-    s::Symbol
-)
-
-    if s ∈ fieldnames(typeof(mc))
-        return getfield(mc,s)
-    else
-        return getproperty(mc.chease,s)
-    end
 end
 
 
