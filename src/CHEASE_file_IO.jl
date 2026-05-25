@@ -321,3 +321,115 @@ end
 
 export read_chease_output
 push!(document[:Base], :read_chease_output)
+
+Base.@kwdef mutable struct CHEASEnamelist
+    NEQDSK::Int     = 0
+    NSURF::Int      = 6
+    NTCASE::Int     = 0
+
+    NBLOPT::Int     = 0
+    NBSOPT::Int     = 0
+    CPRESS::Float64 = 1.000
+    CFBAL::Float64  = 1.0000 # set to 1. if NSCAL = 4
+
+    NCSCAL::Int     = 2   # set to 4 if NOT scale q
+    CSSPEC::Float64 = 0.000
+    QSPEC::Float64  = 1.6185
+
+    NTMF0::Int      = 0
+    CURRT::Float64  = 0.3000
+
+    NSTTP::Int      = 2
+    NFUNC::Int      = 4
+    NIPR::Int       = 1
+    NISO::Int       = 100
+    NIDEAL::Int     = 0
+
+    NPPFUN::Int     = 4
+    NPP::Int        = 1
+    NPPR::Int       = 30
+
+    NSOUR::Int      = 2
+    NPROPT::Int     = 2
+
+    NS::Int         = 60
+    NT::Int         = 60
+    NPSI::Int       = 240
+    NCHI::Int       = 200
+
+    NV::Int         = 160
+    REXT::Float64   = 6.0
+    NVEXP::Int      = 8
+    R0W::Float64    = 0.90
+    RZ0W::Float64   = 0.0
+
+    NMESHA::Int     = 2
+    SOLPDA::Float64 = 0.60
+    QWIDTH0::Float64 = 0.30
+    ROTE::Float64   = 0.0000
+    NTOR::Int       = 1
+
+    NPOIDQ::Int     = 6
+    QSHAVE::Float64 = 100.0
+
+    QPLACE::Vector{Float64} =
+        [2.0000, 3.0000, 4.0000, 5.0000, 6.0000, 7.0000]
+
+    QWIDTH::Vector{Float64} =
+        [0.0009, 0.0007, 0.0006, 0.0006, 0.0005, 0.0005]
+
+    NEGP::Int       = -1
+    NER::Int        = 1
+
+    EPSLON::Float64 = 1.0e-10
+    GAMMA::Float64  = 1.6666666667
+
+    MSMAX::Int      = 40
+    NINMAP::Int     = 50
+    NINSCA::Int     = 50
+
+    NOPT::Int       = 0
+    NPLOT::Int      = 1
+    NBAL::Int       = 0
+
+    B0EXP::Float64  = 1.5
+    R0EXP::Float64  = 3.0
+end
+
+export CHEASEnamelist
+push!(document[:Base], :CHEASEnamelist)
+
+"""
+    write_CHEASEnamelist(nl::CHEASEnamelist, filename::AbstractString="datain")
+
+Writes a CHEASE namelist file from a CHEASEnamelist struct to `filename`.
+"""
+function write_CHEASEnamelist(
+    nl::CHEASEnamelist,
+    filename::AbstractString="datain"
+)
+    open(filename, "w") do io
+        println(io, "***")
+        println(io, "***    Example Torus")
+        println(io, "***")
+        println(io, "***")
+        println(io, "&EQDATA")
+
+        for field in fieldnames(CHEASEnamelist)
+            val = getfield(nl, field)
+
+            if val isa Vector
+                println(io, "  $(field)(1) = ", join(val, ", "), ",")
+            else
+                println(io, "  $(field) = ", val, ",")
+            end
+        end
+
+        println(io, "&END")
+    end
+
+    return filename
+end
+
+export write_CHEASEnamelist
+push!(document[:Base], :write_CHEASEnamelist)
