@@ -120,7 +120,7 @@ function write_EXPEQ_file(eq::MartianCHEASE)
     append!(write_list,string.(pprime))
     append!(write_list,string.(eq.j_tor))
 
-    open("EXPEQ2","w") do file
+    open("EXPEQ","w") do file
         for line in write_list
             write(file,"$line\n")
         end
