@@ -97,7 +97,7 @@ function write_EXPEQ_file(eq::MartianCHEASE)
 
     push!(
         write_list,
-        string(length(eq.r_bound),"  ",NWBPS, "  ",NDATA)
+        string(length(eq.r_bound)," ",NWBPS, " ",NDATA)
     )
 
     for (r,z) in zip(r_bound_norm,z_bound_norm)
@@ -113,13 +113,11 @@ function write_EXPEQ_file(eq::MartianCHEASE)
     
     end
 
-    push!(write_list,
-        "$(length(eq.pprime))   $(string(eq.mode))"
-    )
-
-
+    push!(write_list, "$(length(eq.pprime))")
+    push!(write_list, "$(string(eq.mode))")
+    
     append!(write_list,string.(eq.rho_psi))
-    append!(write_list,string.(eq.pprime))
+    append!(write_list,string.(pprime))
     append!(write_list,string.(eq.j_tor))
 
     open("EXPEQ2","w") do file
