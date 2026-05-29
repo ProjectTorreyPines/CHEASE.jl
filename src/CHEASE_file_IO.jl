@@ -72,6 +72,61 @@ function write_EXPEQ_file(
     end
 end
 
+function write_EXPEQ_file(eq::MartianCHEASE)
+
+    pressure_sep_norm =
+        eq.pressure_sep / (eq.Bt_center^2 / μ_0)
+
+    pprime = 2 * pi * eq.pprime * eq.r_geo^2 * μ_0 / eq.Bt_center
+
+    ## canNOT normalize here because MartianCHEASE uses FF', <Jtor> or <J//>
+    #j_tor_norm =
+    #    abs.(eq.j_tor ./ (eq.Bt_center/(eq.r_center*μ_0)))
+
+    r_bound_norm = eq.r_bound ./ eq.r_geo
+    z_bound_norm = eq.z_bound ./ eq.r_geo
+
+    NWBPS = eq.number_walls
+    NDATA = eq.wall_resistivity_type
+
+    write_list = String[]
+
+    push!(write_list,string(eq.ϵ))
+    push!(write_list,string(eq.z_axis))
+    push!(write_list,string(pressure_sep_norm))
+
+    push!(
+        write_list,
+        string(length(eq.r_bound)," ",NWBPS, " ",NDATA)
+    )
+
+    for (r,z) in zip(r_bound_norm,z_bound_norm)
+        push!(write_list,"$r    $z")
+    end
+
+    if NWBPS > 1 ## WHAT TO DO if > 2
+        r_limiter_norm = eq.r_limiter ./ eq.r_geo
+        z_limiter_norm = eq.z_limiter ./ eq.r_geo
+        for (rw,zw) in zip(r_limiter_norm, z_limiter_norm)
+            push!(write_list,"$(rw)    $(zw)")
+        end
+    
+    end
+
+    push!(write_list, "$(length(eq.pprime))")
+    push!(write_list, "$(string(eq.mode))")
+    
+    append!(write_list,string.(eq.rho_psi))
+    append!(write_list,string.(pprime))
+    append!(write_list,string.(eq.j_tor))
+
+    open("EXPEQ","w") do file
+        for line in write_list
+            write(file,"$line\n")
+        end
+    end
+end
+
 export write_EXPEQ_file
 push!(document[:Base], :write_EXPEQ_file)
 
@@ -266,3 +321,115 @@ end
 
 export read_chease_output
 push!(document[:Base], :read_chease_output)
+
+Base.@kwdef mutable struct CHEASEnamelist
+    NEQDSK::Int     = 0
+    NSURF::Int      = 6
+    NTCASE::Int     = 0
+
+    NBLOPT::Int     = 0
+    NBSOPT::Int     = 0
+    CPRESS::Float64 = 1.000
+    CFBAL::Float64  = 1.0000 # set to 1. if NSCAL = 4
+
+    NCSCAL::Int     = 2   # set to 4 if NOT scale q
+    CSSPEC::Float64 = 0.000
+    QSPEC::Float64  = 1.6185
+
+    NTMF0::Int      = 0
+    CURRT::Float64  = 0.3000
+
+    NSTTP::Int      = 2
+    NFUNC::Int      = 4
+    NIPR::Int       = 1
+    NISO::Int       = 100
+    NIDEAL::Int     = 0
+
+    NPPFUN::Int     = 4
+    NPP::Int        = 1
+    NPPR::Int       = 30
+
+    NSOUR::Int      = 2
+    NPROPT::Int     = 2
+
+    NS::Int         = 60
+    NT::Int         = 60
+    NPSI::Int       = 240
+    NCHI::Int       = 200
+
+    NV::Int         = 160
+    REXT::Float64   = 6.0
+    NVEXP::Int      = 8
+    R0W::Float64    = 0.90
+    RZ0W::Float64   = 0.0
+
+    NMESHA::Int     = 2
+    SOLPDA::Float64 = 0.60
+    QWIDTH0::Float64 = 0.30
+    ROTE::Float64   = 0.0000
+    NTOR::Int       = 1
+
+    NPOIDQ::Int     = 6
+    QSHAVE::Float64 = 100.0
+
+    QPLACE::Vector{Float64} =
+        [2.0000, 3.0000, 4.0000, 5.0000, 6.0000, 7.0000]
+
+    QWIDTH::Vector{Float64} =
+        [0.0009, 0.0007, 0.0006, 0.0006, 0.0005, 0.0005]
+
+    NEGP::Int       = -1
+    NER::Int        = 1
+
+    EPSLON::Float64 = 1.0e-10
+    GAMMA::Float64  = 1.6666666667
+
+    MSMAX::Int      = 40
+    NINMAP::Int     = 50
+    NINSCA::Int     = 50
+
+    NOPT::Int       = 0
+    NPLOT::Int      = 1
+    NBAL::Int       = 0
+
+    B0EXP::Float64  = 1.5
+    R0EXP::Float64  = 3.0
+end
+
+export CHEASEnamelist
+push!(document[:Base], :CHEASEnamelist)
+
+"""
+    write_CHEASEnamelist(nl::CHEASEnamelist, filename::AbstractString="datain")
+
+Writes a CHEASE namelist file from a CHEASEnamelist struct to `filename`.
+"""
+function write_CHEASEnamelist(
+    nl::CHEASEnamelist,
+    filename::AbstractString="datain"
+)
+    open(filename, "w") do io
+        println(io, "***")
+        println(io, "***    Example Torus")
+        println(io, "***")
+        println(io, "***")
+        println(io, "&EQDATA")
+
+        for field in fieldnames(CHEASEnamelist)
+            val = getfield(nl, field)
+
+            if val isa Vector
+                println(io, "  $(field)(1) = ", join(val, ", "), ",")
+            else
+                println(io, "  $(field) = ", val, ",")
+            end
+        end
+
+        println(io, "&END")
+    end
+
+    return filename
+end
+
+export write_CHEASEnamelist
+push!(document[:Base], :write_CHEASEnamelist)

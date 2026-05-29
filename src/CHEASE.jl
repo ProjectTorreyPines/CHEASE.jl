@@ -23,6 +23,26 @@ mutable struct Chease
     gfile::EFIT.GEQDSKFile
 end
 
+mutable struct MartianCHEASE
+    ϵ::Float64
+    z_axis::Float64
+    pressure_sep::Float64
+    Bt_center::Float64
+    r_geo::Float64
+    Ip::Float64
+    r_bound::Vector{Float64}
+    z_bound::Vector{Float64}
+    mode::Int
+    rho_psi::Union{Missing,Vector{Float64}}
+    j_tor::Vector{Float64}
+    pprime::Vector{Float64}
+    number_walls::Int  # => NWBPS in EXPEQ
+    wall_resistivity_type::Int # => NDATA in EXPEQ
+    r_limiter::Union{Missing,Vector{Float64}}
+    z_limiter::Union{Missing,Vector{Float64}}
+end
+
+
 # include CHEASE file handling functions
 include("CHEASE_file_IO.jl")
 
