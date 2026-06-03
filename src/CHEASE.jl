@@ -115,31 +115,31 @@ function run_chease(
         @warn "CHEASE run directory $run_dir"
     end
 
-    old_dir = pwd()
+    # NOTE: do not `cd` into run_dir. The process-wide working directory is
+    # shared across all threads/tasks, so concurrent CHEASE runs would race
+    # (capturing each other's run_dir as `old_dir` and failing once it is
+    # cleaned up). Instead write every file with an absolute path under run_dir
+    # and run the binary with its own working directory via `Cmd(...; dir=)`.
+    output_path = joinpath(run_dir, "chease.output")
     try
-        cd(run_dir)
-
-        open("chease.output", "w") do io
+        open(output_path, "w") do io
             # write chease namelist to file
-            write_chease_namelist(Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; rescale_eq_to_ip, extra_box_fraction)
+            write_chease_namelist(Bt_center, r_geo, Ip, r_bound[1:end-1], z_bound[1:end-1]; rescale_eq_to_ip, extra_box_fraction, dir=run_dir)
 
             # Create EQOUT file
-            write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, Ip, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor)
+            write_EXPEQ_file(ϵ, z_axis, pressure_sep, r_geo, Bt_center, Ip, r_bound[1:end-1], z_bound[1:end-1], mode, rho_psi, pressure, j_tor; dir=run_dir)
 
             # run CHEASE
-            return run(pipeline(`$(executable)`; stdout=io, stderr=io))
+            return run(pipeline(Cmd(`$(executable)`; dir=run_dir); stdout=io, stderr=io))
         end
 
     catch e
         # show last 100 lines of chease.output file
-        txt = open("chease.output", "r") do io
+        txt = open(output_path, "r") do io
             return split(read(io, String), "\n")
         end
         @error "ERROR running CHEASE\n...\n" * join(txt[max(1, length(txt) - 100):end], "\n")
         rethrow(e)
-
-    finally
-        cd(old_dir)
     end
 
     # read output

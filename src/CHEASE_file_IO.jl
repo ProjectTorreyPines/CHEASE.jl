@@ -29,7 +29,8 @@ function write_EXPEQ_file(
     mode::Int,
     rho_pol::Vector{Float64},
     pressure::Vector{Float64},
-    j_tor::Vector{Float64})
+    j_tor::Vector{Float64};
+    dir::AbstractString=pwd())
 
     # Normalize from SI to chease units
     pressure_sep_norm = pressure_sep / (Bt_center^2 / μ_0)
@@ -64,8 +65,9 @@ function write_EXPEQ_file(
     write_list = vcat(write_list, map(string, pressure_norm))
     write_list = vcat(write_list, map(string, j_tor_norm))
 
-    touch("EXPEQ")
-    open("EXPEQ", "w") do file
+    expeq_path = joinpath(dir, "EXPEQ")
+    touch(expeq_path)
+    open(expeq_path, "w") do file
         for line in write_list
             write(file, "$line \n")
         end
@@ -149,7 +151,8 @@ function write_chease_namelist(
     r_bound::Vector{Float64},
     z_bound::Vector{Float64};
     rescale_eq_to_ip::Bool=false,
-    extra_box_fraction::Float64=0.33)
+    extra_box_fraction::Float64=0.33,
+    dir::AbstractString=pwd())
 
     eqdata = Dict{Symbol,Any}()
     eqdata[:R0EXP] = r_center
@@ -193,7 +196,7 @@ NIDEAL = 6
 NPLOT = 1
 NTCASE = 0
 NSMOOTH = 1
-NS = 40
+NS = 80
 NT = $(eqdata[:NT])
 NPSI = 180
 NCHI = 180
@@ -277,8 +280,8 @@ RZ0W = 0.0
 NEQDXTPO = 1
 NEQDSK = 0
 PSISCL = 1.0
-NRBOX = 129
-NZBOX = 129
+NRBOX = 257
+NZBOX = 257
 B0EXP = $(eqdata[:B0EXP])
 CURRT = $(eqdata[:CURRT])
 SIGNB0XP = $(eqdata[:SIGNB0XP])
@@ -300,7 +303,7 @@ NLDIAG = 11*.true.
 NAL0AUTO = 1
 /
 """
-    open(joinpath(pwd(), "chease_namelist"), "w") do file
+    open(joinpath(dir, "chease_namelist"), "w") do file
         return write(file, nml)
     end
 
